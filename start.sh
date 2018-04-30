@@ -2,6 +2,7 @@
 
 export PATH=$CONDA_DIR/bin:$PATH
 export PYTHONPATH=$SPARK_HOME/python:$(echo $SPARK_HOME/python/lib/py4j-*-src.zip)
+export PYSPARK_PYTHON=/opt/conda/bin/python
 
 if [[ "x$JUPYTER_NOTEBOOK_PASSWORD" != "x" ]]; then
     HASH=$(python -c "from notebook.auth import passwd; print(passwd('$JUPYTER_NOTEBOOK_PASSWORD'))")
