@@ -1,6 +1,6 @@
 # (ideally) minimal pyspark/jupyter notebook
 
-FROM radanalyticsio/openshift-spark:2.2-latest
+FROM elmiko/openshift-spark:python36-latest
 
 USER root
 
@@ -14,7 +14,7 @@ ENV LANGUAGE=en_US.UTF-8 \
     CONDA_DIR=/opt/conda \
     NB_USER=nbuser \
     NB_UID=1011 \
-    NB_PYTHON_VER=3.5 \
+    NB_PYTHON_VER=3.6.3 \
     PATH=$CONDA_DIR/bin:$PATH \
     SPARK_HOME=/opt/spark \
     MINICONDA_VERSION=4.3.21
@@ -23,8 +23,12 @@ ENV LANGUAGE=en_US.UTF-8 \
 
 LABEL io.k8s.description="PySpark Jupyter Notebook." \
       io.k8s.display-name="PySpark Jupyter Notebook." \
-      io.openshift.expose-services="8888:http"
+      io.openshift.expose-services="8888:http,42000:http,42100:http"
 
+# expose a port for the workers to connect back
+EXPOSE 42000
+# also expose a port for the block manager
+EXPOSE 42100
 
 RUN echo 'PS1="\u@\h:\w\\$ \[$(tput sgr0)\]"' >> /root/.bashrc \
     && chgrp root /etc/passwd \
