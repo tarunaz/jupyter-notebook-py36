@@ -1,7 +1,7 @@
-# jupyter-notebook-py3.5
+# jupyter-notebook-py36
 
 This is a container image intended to make it easy to run Jupyter notebooks/jupyterlab with Apache Spark on OpenShift. You can use it as-is (by adding it to a project), or you can use it as the basis for another image. In the latter case, you'll probably want to add some notebooks, data, and/or additional packages to the derived image.
-The Image uses python python 3.5
+The Image uses python python 3.6
 
 ## Usage
 
@@ -9,7 +9,7 @@ The Image uses python python 3.5
 
 For your convenience, binary image builds are available from Docker Hub.
 
-* Add the image `radanalyticsio/jupyter-notebook-py3.5` to an OpenShift project.
+* Add the image `elmiko/jupyter-notebook-py36` to an OpenShift project.
 * Set `JUPYTER_NOTEBOOK_PASSWORD` in the pod environment to something you can remember (this step is optional but highly recommended; if you don't do this, you'll need to trawl the logs for an access token for your new notebook).
 * Set `JUPYTERLAB` to `true` in the pod environment to use jupyterlab UI.
 * Create a route to the pod.
@@ -17,7 +17,7 @@ For your convenience, binary image builds are available from Docker Hub.
 ### deploy on openshift
 
 ```
-oc new-app radanalyticsio/jupyter-notebook-py3.5 -e  JUPYTER_NOTEBOOK_PASSWORD=developer -e JUPYTERLAB=false
+oc new-app elmiko/jupyter-notebook-py36 -e  JUPYTER_NOTEBOOK_PASSWORD=developer -e JUPYTERLAB=false
 
 ```
 ### As a base image
@@ -31,4 +31,4 @@ Make sure that this notebook image is running the same version of Spark as the e
 
 ## Credits
 
-This image was initially based on [Graham Dumpleton's images](https://github.com/getwarped/jupyter-stacks), which have some additional functionality (notably s2i support) that we'd like to incorporate in the future.
+This image was initially based on [Subin Modeel's image](https://github.com/radanalytics/jupyter-notebook-py3.5) and  [Graham Dumpleton's images](https://github.com/getwarped/jupyter-stacks), which have some additional functionality (notably s2i support) that we'd like to incorporate in the future.
