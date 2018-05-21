@@ -1,6 +1,6 @@
 # (ideally) minimal pyspark/jupyter notebook
 
-FROM elmiko/openshift-spark:python36-latest
+FROM tmehrarh/openshift-spark:py36-latest
 
 USER root
 
@@ -15,7 +15,7 @@ ENV LANGUAGE=en_US.UTF-8 \
     NB_USER=nbuser \
     NB_UID=1011 \
     NB_PYTHON_VER=3.6.3 \
-    PATH=$CONDA_DIR/bin:$PATH \
+    PATH=/opt/conda/bin:$PATH \
     SPARK_HOME=/opt/spark \
     MINICONDA_VERSION=4.3.21 \
     HADOOP_HOME=/opt/hadoop-2.7.6 \	
@@ -35,16 +35,18 @@ EXPOSE 42100
 RUN mkdir -p /opt/hadoop-2.7.6 && \ 
     chmod +x /usr/local/bin/fix-permissions.sh
 
-RUN wget http://www-us.apache.org/dist/hadoop/common/hadoop-2.7.6/hadoop-2.7.6.tar.gz \
-    && tar -xzvf hadoop-2.7.6.tar.gz -C /opt
+#RUN wget http://www-us.apache.org/dist/hadoop/common/hadoop-2.7.6/hadoop-2.7.6.tar.gz	
+
+COPY hadoop-2.7.6.tar.gz /tmp/
+RUN tar -xzvf /tmp/hadoop-2.7.6.tar.gz -C /opt
 
 RUN echo 'PS1="\u@\h:\w\\$ \[$(tput sgr0)\]"' >> /root/.bashrc \
     && chgrp root /etc/passwd \
     && chgrp -R root /opt \
     && chmod -R ug+rwx /opt \
     && useradd -m -s /bin/bash -N -u $NB_UID $NB_USER \
-    && usermod -g root $NB_USER \
-    && yum install -y curl wget curl tree java-headless bzip2 gnupg2 sqlite3 gcc gcc-c++ glibc-devel git mesa-libGL mesa-libGL-devel ca-certificates vim 
+    && usermod -g root $NB_USER
+#   && yum install -y curl wget curl tree java-headless bzip2 gnupg2 sqlite3 gcc gcc-c++ glibc-devel git mesa-libGL mesa-libGL-devel ca-certificates vim 
     
 
 
@@ -58,33 +60,8 @@ USER $NB_USER
 # which will likely try to create files and directories in PWD and
 # error out if it cannot. 
 # 
-ADD fix-permissions.sh /usr/local/bin/fix-permissions.sh
 ENV HOME /home/$NB_USER
 RUN mkdir $HOME/.jupyter \
-    && cd /tmp \
-    && curl -s -o Miniconda3.sh https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh \
-    && echo c1c15d3baba15bf50293ae963abef853 Miniconda3.sh | md5sum -c - \
-    && bash Miniconda3.sh -b -p $CONDA_DIR \
-    && rm Miniconda3.sh \
-    && export PATH=$CONDA_DIR/bin:$PATH \
-    && $CONDA_DIR/bin/conda config --system --prepend channels conda-forge  \
-    && $CONDA_DIR/bin/conda config --system --set auto_update_conda false  \
-    && $CONDA_DIR/bin/conda config --system --set show_channel_urls true  \
-    && $CONDA_DIR/bin/conda update --all --quiet --yes  \
-    && $CONDA_DIR/bin/conda install -c conda-forge 'jupyterhub=0.8.1' \
-    && $CONDA_DIR/bin/conda install --quiet --yes 'nomkl' jupyter 'notebook=5.4.1' \
-        'jupyterlab=0.32.0*' \
-        'ipywidgets=7.0*' \
-        'pandas=0.19*' \
-        'matplotlib=2.0*' \
-        'scipy=0.19*' \
-        'seaborn=0.7*' \
-        'scikit-learn=0.18*' \
-        'protobuf=3.*' \
-    && $CONDA_DIR/bin/conda clean -tipsy \
-    && $CONDA_DIR/bin/conda remove --quiet --yes --force qt pyqt \
-    && jupyter nbextension enable --py widgetsnbextension --sys-prefix \
-    && fix-permissions.sh $CONDA_DIR \
     && fix-permissions.sh $HOME 
 
 
