@@ -19,7 +19,6 @@ ENV LANGUAGE=en_US.UTF-8 \
     SPARK_HOME=/opt/spark \
     MINICONDA_VERSION=4.3.21 \
     HADOOP_HOME=/opt/hadoop-2.7.6 \	
-    HOME=/home/nbuser \
     JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.171-7.b10.el7.x86_64/jre 
 
 # TODO remove tini after docker 1.13.1
