@@ -17,7 +17,10 @@ ENV LANGUAGE=en_US.UTF-8 \
     NB_PYTHON_VER=3.6.3 \
     PATH=$CONDA_DIR/bin:$PATH \
     SPARK_HOME=/opt/spark \
-    MINICONDA_VERSION=4.3.21
+    MINICONDA_VERSION=4.3.21 \
+    HADOOP_HOME=/opt/hadoop-2.7.6 \	
+    HOME=/home/nbuser \
+    JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.171-7.b10.el7.x86_64/jre 
 
 # TODO remove tini after docker 1.13.1
 
@@ -29,6 +32,12 @@ LABEL io.k8s.description="PySpark Jupyter Notebook." \
 EXPOSE 42000
 # also expose a port for the block manager
 EXPOSE 42100
+
+RUN mkdir -p /opt/hadoop-2.7.6 && \ 
+    chmod +x /usr/local/bin/fix-permissions.sh
+
+RUN wget http://www-us.apache.org/dist/hadoop/common/hadoop-2.7.6/hadoop-2.7.6.tar.gz \
+    && tar -xzvf hadoop-2.7.6.tar.gz -C /opt
 
 RUN echo 'PS1="\u@\h:\w\\$ \[$(tput sgr0)\]"' >> /root/.bashrc \
     && chgrp root /etc/passwd \
