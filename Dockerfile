@@ -63,8 +63,9 @@ RUN mkdir $HOME/.jupyter \
     && $CONDA_DIR/bin/conda config --system --set auto_update_conda false  \
     && $CONDA_DIR/bin/conda config --system --set show_channel_urls true  \
     && $CONDA_DIR/bin/conda update --all --quiet --yes  \
-    && $CONDA_DIR/bin/conda install --quiet --yes 'nomkl' jupyter 'notebook=5.4.*' \
-        'jupyterlab=0.32*' \
+    && $CONDA_DIR/bin/conda install -c conda-forge 'jupyterhub=0.8.1' \
+    && $CONDA_DIR/bin/conda install --quiet --yes 'nomkl' jupyter 'notebook=5.4.1' \
+        'jupyterlab=0.32.0*' \
         'ipywidgets=7.0*' \
         'pandas=0.19*' \
         'matplotlib=2.0*' \
