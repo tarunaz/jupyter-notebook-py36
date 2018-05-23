@@ -18,7 +18,7 @@ fi
 
 if [[ "$JUPYTERLAB" == true ]]; then
 	echo "jupyter lab...."
-    exec jupyter lab
+    	exec jupyter lab
 else
 	echo "jupyter notebook...."
 	exec jupyter notebook
