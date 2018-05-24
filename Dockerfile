@@ -34,12 +34,9 @@ EXPOSE 42100
 
 RUN mkdir -p /opt/hadoop-2.7.6
 
-#RUN wget http://www-us.apache.org/dist/hadoop/common/hadoop-2.7.6/hadoop-2.7.6.tar.gz	
-
-COPY hadoop-2.7.6.tar.gz /tmp/
-RUN tar -xzvf /tmp/hadoop-2.7.6.tar.gz -C /opt
-
-RUN rm -rf /tmp/hadoop-2.7.6.tar.gz
+COPY hadoop-2.7.6.tar.gz /tmp
+RUN tar -xzvf /tmp/hadoop-2.7.6.tar.gz -C /opt \
+    && rm -rf /tmp/hadoop-2.7.6.tar.gz
 
 ADD fix-permissions.sh /usr/local/bin/fix-permissions.sh 
 RUN chmod +x /usr/local/bin/fix-permissions.sh  \
@@ -47,7 +44,7 @@ RUN chmod +x /usr/local/bin/fix-permissions.sh  \
     && curl -s -o Miniconda3.sh https://repo.continuum.io/miniconda/Miniconda3-4.3.21-Linux-x86_64.sh \
     && echo c1c15d3baba15bf50293ae963abef853 Miniconda3.sh | md5sum -c - \
     && bash Miniconda3.sh -b -p $CONDA_DIR \
-    && rm Miniconda3.sh \
+    && rm -rf Miniconda3.sh \
     && export PATH=$CONDA_DIR/bin:$PATH \
     && $CONDA_DIR/bin/conda config --system --prepend channels conda-forge  \
     && $CONDA_DIR/bin/conda config --system --set auto_update_conda false  \
@@ -56,13 +53,15 @@ RUN chmod +x /usr/local/bin/fix-permissions.sh  \
     && $CONDA_DIR/bin/conda install -c conda-forge 'jupyterhub=0.8.1' \
     && $CONDA_DIR/bin/conda install --quiet --yes 'nomkl' jupyter 'notebook=5.4.1' \
         'jupyterlab=0.32.0*' \
-        'ipywidgets=7.0*' \
-        'pandas=0.19*' \
         'matplotlib=2.0*' \
-        'scipy=0.19*' \
-        'seaborn=0.7*' \
-        'scikit-learn=0.18*' \
-        'protobuf=3.*' \
+    && yum erase -y gcc gcc-c++ glibc-devel \
+    && yum clean all -y \
+    && rm -rf /var/cache/yum \
+    && rm -rf /root/.npm \
+    && rm -rf /root/.cache \
+    && rm -rf /root/.config \
+    && rm -rf /root/.local \
+    && rm -rf /root/tmp \
     && $CONDA_DIR/bin/conda clean -tipsy \
     && $CONDA_DIR/bin/conda remove --quiet --yes --force qt pyqt \
     && jupyter nbextension enable --py widgetsnbextension --sys-prefix \
@@ -103,13 +102,6 @@ RUN mkdir /notebooks  \
     && echo "c.NotebookApp.ip = '*'" >> $HOME/.jupyter/jupyter_notebook_config.py \
     && echo "c.NotebookApp.open_browser = False" >> $HOME/.jupyter/jupyter_notebook_config.py \
     && echo "c.NotebookApp.notebook_dir = '/notebooks'" >> $HOME/.jupyter/jupyter_notebook_config.py \
-    && yum erase -y gcc gcc-c++ glibc-devel \
-    && yum clean all -y \
-    && rm -rf /root/.npm \
-    && rm -rf /root/.cache \
-    && rm -rf /root/.config \
-    && rm -rf /root/.local \
-    && rm -rf /root/tmp \
     && fix-permissions.sh /opt \
     && fix-permissions.sh $CONDA_DIR \
     && fix-permissions.sh /notebooks \
